@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    <w:docDefaults>
+        <w:rPrDefault>
+            <w:rPr>
+                <w:rFonts w:asciiTheme="minorHAnsi" w:eastAsiaTheme="minorEastAsia" w:hAnsiTheme="minorHAnsi" w:cstheme="minorBidi"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+                <w:lang w:val="el-GR" w:eastAsia="el-GR" w:bidi="ar-SA"/>
+            </w:rPr>
+        </w:rPrDefault>
+        <w:pPrDefault>
+            <w:pPr>
+                <w:spacing w:after="200" w:line="276" w:lineRule="auto"/>
+            </w:pPr>
+        </w:pPrDefault>
+    </w:docDefaults>
+    <w:style w:type="paragraph" w:default="1" w:styleId="a">
+        <w:name w:val="Normal"/>
+        <w:qFormat/>
+        <w:rsid w:val="004A4758"/>
+        <w:rPr>
+            <w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/>
+        </w:rPr>
+    </w:style>
+    <w:style w:type="paragraph" w:styleId="1">
+        <w:name w:val="heading 1"/>
+        <w:basedOn w:val="a0"/>
+        <w:next w:val="a1"/>
+        <w:rsid w:val="001420B7"/>
+        <w:pPr>
+            <w:ind w:left="432" w:hanging="432"/>
+            <w:outlineLvl w:val="0"/>
+        </w:pPr>
+        <w:rPr>
+            <w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/>
+            <w:b/>
+            <w:bCs/>
+            <w:szCs w:val="18"/>
+        </w:rPr>
+    </w:style>
+    <w:style w:type="character" w:default="1" w:styleId="a2">
+        <w:name w:val="Default Paragraph Font"/>
+        <w:uiPriority w:val="1"/>
+        <w:semiHidden/>
+        <w:unhideWhenUsed/>
+    </w:style>
+    <w:style w:type="table" w:default="1" w:styleId="a3">
+        <w:name w:val="Normal Table"/>
+        <w:uiPriority w:val="99"/>
+        <w:semiHidden/>
+        <w:unhideWhenUsed/>
+        <w:qFormat/>
+        <w:tblPr>
+            <w:tblInd w:w="0" w:type="dxa"/>
+            <w:tblCellMar>
+                <w:top w:w="0" w:type="dxa"/>
+                <w:left w:w="108" w:type="dxa"/>
+                <w:bottom w:w="0" w:type="dxa"/>
+                <w:right w:w="108" w:type="dxa"/>
+            </w:tblCellMar>
+        </w:tblPr>
+    </w:style>
+    <w:style w:type="numbering" w:default="1" w:styleId="a4">
+        <w:name w:val="No List"/>
+        <w:uiPriority w:val="99"/>
+        <w:semiHidden/>
+        <w:unhideWhenUsed/>
+    </w:style>
+    <w:style w:type="paragraph" w:customStyle="1" w:styleId="a5">
+        <w:name w:val="Προεπιλογή"/>
+        <w:rsid w:val="001420B7"/>
+        <w:pPr>
+            <w:tabs>
+                <w:tab w:val="left" w:pos="709"/>
+            </w:tabs>
+            <w:suppressAutoHyphens/>
+            <w:spacing w:line="276" w:lineRule="atLeast"/>
+        </w:pPr>
+        <w:rPr>
+            <w:rFonts w:ascii="Georgia" w:eastAsia="DejaVu Sans" w:hAnsi="Georgia" w:cs="DejaVu Sans"/>
+            <w:sz w:val="16"/>
+            <w:szCs w:val="18"/>
+            <w:lang w:eastAsia="zh-CN" w:bidi="hi-IN"/>
+        </w:rPr>
+    </w:style>
+    <w:style w:type="character" w:customStyle="1" w:styleId="Char">
+        <w:name w:val="Κείμενο πλαισίου Char"/>
+        <w:basedOn w:val="a2"/>
+        <w:rsid w:val="001420B7"/>
+    </w:style>
+    <w:style w:type="paragraph" w:customStyle="1" w:styleId="a0">
+        <w:name w:val="Επικεφαλίδα"/>
+        <w:basedOn w:val="a5"/>
+        <w:next w:val="a1"/>
+        <w:rsid w:val="001420B7"/>
+        <w:pPr>
+            <w:keepNext/>
+            <w:spacing w:before="240" w:after="120"/>
+        </w:pPr>
+        <w:rPr>
+            <w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>
+            <w:sz w:val="22"/>
+            <w:szCs w:val="22"/>
+        </w:rPr>
+    </w:style>
+    <w:style w:type="paragraph" w:styleId="a1">
+        <w:name w:val="Body Text"/>
+        <w:basedOn w:val="a5"/>
+        <w:rsid w:val="001420B7"/>
+        <w:pPr>
+            <w:spacing w:after="120"/>
+        </w:pPr>
+    </w:style>
+    <w:style w:type="paragraph" w:styleId="a6">
+        <w:name w:val="List"/>
+        <w:basedOn w:val="a1"/>
+        <w:rsid w:val="001420B7"/>
+    </w:style>
+    <w:style w:type="paragraph" w:styleId="a7">
+        <w:name w:val="caption"/>
+        <w:basedOn w:val="a5"/>
+        <w:rsid w:val="001420B7"/>
+    </w:style>
+    <w:style w:type="paragraph" w:customStyle="1" w:styleId="a8">
+        <w:name w:val="Ευρετήριο"/>
+        <w:basedOn w:val="a5"/>
+        <w:rsid w:val="001420B7"/>
+        <w:pPr>
+            <w:suppressLineNumbers/>
+        </w:pPr>
+    </w:style>
+    <w:style w:type="paragraph" w:customStyle="1" w:styleId="a9">
+        <w:name w:val="Περιεχόμενα πίνακα"/>
+        <w:basedOn w:val="a5"/>
+        <w:rsid w:val="001420B7"/>
+        <w:pPr>
+            <w:suppressLineNumbers/>
+        </w:pPr>
+    </w:style>
+    <w:style w:type="paragraph" w:styleId="aa">
+        <w:name w:val="Balloon Text"/>
+        <w:basedOn w:val="a5"/>
+        <w:rsid w:val="001420B7"/>
+    </w:style>
+</w:styles>

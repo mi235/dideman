@@ -1,0 +1,41 @@
+{% extends "admin/base_site.html" %}
+{% load i18n l10n %}
+{% load url from future %}
+{% load admin_urls %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<form action="" method="post">{% csrf_token %}
+  <div>
+
+  </div>
+  <div id="content-main">
+    <input type="hidden" name="action" value="{{ action_name }}" />
+    <input type="hidden" name="post" value="yes" />
+    <h2>Αποτελέσματα του {{q}}: {{ t }}</h2>
+    
+    <div><ul>
+      {% for group, item in set.items %}
+    
+        {% for r in item %}
+          <li style="list-style-type: none; padding: 1px 0;border-bottom: 1px #eee solid;">
+            <h3><a href="{{ r.app_label }}/{{ r.object_name|lower  }}/{{ r.parent_id }}">{{ r.vat_number }} : {{ r.lastname }} {{ r.firstname }} του {{ r.fathername }} {{ r.profession }} 
+            {% if r.organization_serving %} - {{ r.organization_serving }}{% endif %} - {{ group }}</a></h3>
+          </li>
+        {% empty %}
+                    
+        {% endfor %}
+
+      {% endfor %}
+    </ul></div>
+    <br />
+    <div class="footer"></div>
+    <div><p><a href="/admin">Επιστροφή</a></p></div>
+    </div>
+</form>
+{% endblock %}

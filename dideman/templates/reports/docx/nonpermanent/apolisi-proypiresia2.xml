@@ -1,0 +1,97 @@
+﻿      <w:p>
+      <w:pPr>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr/>
+        <w:t xml:space="preserve"></w:t>
+      </w:r>
+      <w:r>
+        <w:rPr/>
+        <w:t>Σας ανακοινώνουμε ότι, όπως προκύπτει από το αρχείο που τηρείται στην υπηρεσία μας, ο/η {{rec.recipient}} με όνομα πατρός {{rec.fathername}} του κλάδου {{rec.profession}} {{rec.profession__description}} τοποθετήθηκε στο {{rec.current_placement}} ως {{rec.type}}  ({{ rec.current_placement__substituteplacement__week_hours}} ώρες/εβδομάδα)με σχέση εργασίας ιδιωτικού δικαίου, ορισμένου χρόνου και υπηρέτησε από {{rec.current_placement.date_from}} έως {{rec.current_placement.date_to}}.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="style18"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr/>
+        <w:t>Απόφαση διορισμού {{settings.ministry_title}}: {{rec.order__order}} {{rec.order__date}}</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="style18"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr/>
+        <w:t>Απόφαση τοποθέτησης Διευθυντή Δ.Ε. Δωδεκανήσου: {{rec.order__order_start_manager}} </w:t>
+      </w:r>
+    </w:p>
+
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="style18"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr/>
+        <w:t>Απόφαση απόλυσης Διευθυντή Δ.Ε. Δωδεκανήσου: {{rec.order__order_end_manager}} </w:t>
+      </w:r>
+    </w:p>
+
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="style18"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr/>
+        <w:t>Ημερομηνία ανάληψης υπηρεσίας: {% if rec.current_placement__substituteplacement__date_from_show %} {{rec.current_placement__substituteplacement__date_from_show}} {% else %} {{ rec.current_placement__date_from }} {% endif %} </w:t>
+      </w:r>
+    </w:p>
+
+ <w:p>
+      <w:pPr>
+	<w:pStyle w:val="style18"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr/>
+        <w:t>
+              Χρόνος προϋπηρεσίας για μισθολογικό κλιμάκιο: {{ rec.experience_salary }}
+
+        </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="style18"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr/>
+        <w:t>Χρόνος προϋπηρεσίας για πίνακες αναπληρωτών: {{ rec.experience }}</w:t>
+      </w:r>
+    </w:p>
+
+    <w:p>
+      <w:pPr>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr/>
+        <w:t>
+            Το πλήρες ωράριο εβδομαδιαίας διδακτικής απασχόλησης των εκπαιδευτικών της Δευτεροβάθμιας Εκπαίδευσης κλάδων {{ rec.profession__category }} που ισχύει σύμφωνα με τον Ν.4152/2013 είναι
+      {% if  rec.profession__category == "ΠΕ" %} 23
+            {% else  %} 24 {%endif%}  ώρες
+
+        </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr/>
+        <w:t>Η βεβαίωση αυτή χορηγείται ύστερα από αίτηση του/της ενδιαφερόμενου/ης προκειμένου να τη χρησιμοποιήσει ως δικαιολογητικό για την αναγνώριση της προϋπηρεσίας του/της.</w:t>
+      </w:r>
+    </w:p>
