@@ -1,7 +1,7 @@
 # Django settings for dideman project.
 import locale
 import os
-import dideman.secret_settings as secret_settings
+import secret_settings
 DEBUG = True
 ADMINS = (
      ('ICT Department', 'ictdep@dide.dod.sch.gr'),
@@ -123,7 +123,7 @@ MIDDLEWARE_CLASSES = (
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
-ROOT_URLCONF = 'dideman.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
