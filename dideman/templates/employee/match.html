@@ -1,0 +1,55 @@
+{% extends "employee/base.html" %}
+{% load i18n admin_static %}
+{% block bodyclass %}match{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "employee/match.css" %}" />
+{% endblock %}
+{% block content %}
+{% if form.errors and not form.non_field_errors and not form.this_is_the_match_form.errors %}
+<p class="errornote">
+{% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+</p>
+{% endif %}
+
+{% if form.non_field_errors or form.this_is_the_login_form.errors %}
+{% for error in form.non_field_errors %}
+<p class="errornote">
+    {{ error }}
+</p>
+{% endfor %}
+{% endif %}
+
+<div id="content-main">
+<form action="{{ app_path }}" method="post" id="match-form">{% csrf_token %}
+  <div class="form-row">
+      {% if not form.this_is_the_match_form.errors %}{{ form.identification_number.errors }}{% endif %}
+    <label for="id_identification_number" class="required">Αρ.Μητρώου (ή ΑΦΜ) : </label> {{ form.identification_number }}
+  </div>
+  <div class="form-row">
+    {% if not form.this_is_the_match_form.errors %}{{ form.lastname.errors }}{% endif %}
+    <label for="id_lastname">Επώνυμο : </label> {{ form.lastname }}
+  <div class="form-row">
+    {% if not form.this_is_the_match_form.errors %}{{ form.lastname.iban_4.errors }}{% endif %}
+    <label for="id_iban_4">ΙΒΑΝ (4 τελευταία ψηφία) : </label>{{form.iban_4}}
+  </div>
+    <input type="hidden" name="this_is_the_match_form" value="1" />
+    <input type="hidden" name="next" value="{{ next }}" />
+  </div>
+  <div class="submit-row">
+    <label>&nbsp;</label><input type="button" value="Ακύρωση" onclick="javascript:window.location='/'" />
+    <label>&nbsp;</label><input type="submit" value="Ταυτοποίηση" />
+  </div>
+  <div class="form-row">
+    <br/>
+  </div>
+
+  <div class="small" style="text-align:center;">
+    <a href="#" onclick="window.open('/employee/help','helpWindow', 'height=350,width=980');return true;">Έχω πρόβλημα να συνδεθώ με τον ΙΒΑΝ μου</a>
+ </div>
+
+</form>
+
+<script type="text/javascript">
+document.getElementById('id_identification_number').focus()
+</script>
+</div>
+{% endblock %}

@@ -4,9 +4,9 @@
 *.orig
 */migrations/**
 *static/**
-*media/xmlfiles/**
+dideman/media/xmlfiles/**
 *.ropeproject/**
 *#
 
 mig.py
-secret_settings.py
+dideman/secret_settings.py

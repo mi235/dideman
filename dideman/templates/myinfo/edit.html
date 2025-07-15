@@ -1,0 +1,308 @@
+{% extends "myinfo/base.html" %}
+{% load i18n admin_static %}
+{% load base_site %}
+
+{% block extrastyle %}
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/widgets.css" %}"/>
+<link rel="stylesheet" type="text/css" href="/static/admin/css/base.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/chosen.css" />
+<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css">
+<style>
+#map {
+  width: 100%;
+  height: 300px;
+}
+ul {
+  list-style-type: none!important;
+}
+label {
+  width: 220px!important;
+}
+.photoimg {
+  width: 100px;
+  height: 133px;
+
+}
+
+.photo {
+  float: left;
+  margin: 5px; 
+  width: 100px;
+  height: 133px;
+  border: 1px solid #ddd;
+}
+
+.details {
+  float: left!important; 
+  width: calc(100%-112px)!important;
+}
+.photo_padding {
+  padding-left: 0px!important;
+}
+
+@media only screen
+  and (max-width: 800px) and (device-width: 300px) {
+
+#id_address {
+  width: 200px;
+}
+#photo_link {
+  display: none;
+}
+ul {
+  list-style-type: none!important;
+}
+
+label {
+  width: 8em!important;
+}
+.photoimg {
+  width: 100px;
+  height: 133px;
+}
+.photo {
+  text-align: center;
+}
+.details {
+  width: 100%!important;
+}
+.photo_padding {
+  padding-left: 10px!important;
+}
+    }
+</style>
+{{ block.super }}
+
+{% endblock %}
+{% block title %}
+Δ.Δ.Ε. {% get_setting 'dide_place'  %}
+{% endblock %}
+{% block messages %}
+{% if messages %}
+ 
+       <ul class="messagelist">{% for message in messages %}<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>{% endfor %}</ul>
+  
+    {% endif %}
+{% endblock  %}
+{% block extrahead %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+{% endblock %}
+{% block content %}
+<div id="content-main">
+    <form action="{{ app_path }}" method="post" id="edit-form">{% csrf_token %}
+      <fieldset class="module aligned">
+        
+
+        <div class="photo">
+
+        {% if emp.photo %}
+          <img class="photoimg" id="photo" src="/myinfo/edit/photo/{{ emp.id }}/">
+        {% else %}    
+          {% if emp.sex == "Άνδρας" %}
+            <img class="photoimg" id="photo" src="{% static "img/male_user-4x3.png" %}">
+          {% elif  emp.sex == "Γυναίκα" %}
+            <img class="photoimg" id="photo" src="{% static "img/female_user-4x3.png" %}">
+          {% endif %}
+        {% endif %}
+        </div>
+
+        <div class="details">
+          <div><h3 style="font-size:18px;">{{ emp.lastname  }} {{ emp.firstname  }}</h3></div>          
+          <div class="form-row field-profession photo_padding">
+            <div>
+              
+              <h4>{{ emp.profession  }} - {{ emp.profession_description  }}</h4>
+            </div>
+          </div>
+          <div class="form-row field-profession photo_padding" style="border: 0px!important;">
+            <a id="photo_link" href="/myinfo/edit/photo_edit/{{ emp.id }}/" onclick="return focusOrOpen(this, 'Φωτογραφία', {'width': 400, 'height': 600});"> Αλλαγή Φωτογραφίας</a></div>
+          
+        </div>
+        <div style="clear:both;">
+          <div class="form-row field-profession">
+            <div>
+              <label>Πατρώνυμο : </label>
+              <p>{{ emp.fathername  }}</p>
+            </div>
+          </div>
+
+	{% if emp.registration_number %}
+	<div class="form-row field-registration_number">
+        <div>
+          <label>Αριθμός Μητρώου : </label>
+          <p>{{ emp.registration_number  }}</p>
+        </div>
+      </div>
+	{% endif %}
+	{% if emp.vat_number %}
+	<div class="form-row field-rank">
+        <div>
+          <label>Α.Φ.Μ. & Αρ. Δελτίου Ταυτότητας : </label>
+          <p>{{ emp.vat_number  }} - {{ emp.identity_number }}</p>
+        </div>
+      </div>
+	{% endif %}
+
+	{% if emp.date_hired %}
+	<div class="form-row field-rank">
+        <div>
+          <label>Ημερομηνία και ΦΕΚ διορισμού: </label>
+          <p>{{ emp.date_hired }} - {{ emp.order_hired }}</p>
+        </div>
+      </div>
+	{% endif %}
+	{% if emp.total_service %}
+	<div class="form-row field-rank">
+        <div>
+          <label>Συνολική υπηρεσία : </label>
+          <p>{{ emp.total_service }}{% if teaching_exp %} - {{ teaching_exp }} διδακτική{% endif %}</p>
+        </div>
+      </div>
+	{% endif %}
+	{% if emp.hours %}
+	<div class="form-row field-rank">
+        <div>
+          <label>Ωράριο (Μετά το ΠΔ του 2013) : </label>
+          <p>{{ emp.hours }} ώρες</p>
+        </div>
+      </div>
+	{% endif %}
+	{% if emp.hours_next %}
+	<div class="form-row field-rank">
+        <div>
+          <label>Επόμενη αλλαγή ωραρίου σε : </label>
+          <p>{{ emp.hours_next }}</p>
+        </div>
+      </div>
+	{% endif %}
+  {% if emp.date_modified %}
+  <div class="form-row field-rank">
+        <div>
+          <label>Τελευταία ενημέρωση φακέλου : </label>
+          <p>{{ emp.date_modified }}</p>
+        </div>
+      </div>
+  {% endif %}  
+  <div class="form-row">
+    <div style="font-weight: bold;">Σημείωση:</div>
+    <div><p>
+      Τα στοιχεία τηρούνται στο πληροφοριακό σύστημα και ενημερώνονται από το προσωπικό της ΔΔΕ {% get_setting 'dide_place'  %}  με βάση την τρέχουσα νομοθεσία. Τα στοιχεία ενημερώνονται διαρκώς και η καρτέλα αυτή είναι διαθέσιμη μόνο για την δική σας ενημέρωση.
+    </p></div>
+  </div>
+
+ 	<h2>Περισσότερα στοιχεία</h2>
+              {% for field in form %}
+            <div class="form-row field-{{ field.html_name }}">
+              <div>
+                {{ field.errors }}
+                <label for="id_{{ field.html_name }}" {% if field.field.required %}class="required"{% endif %}>{{field.label}} : </label>
+                {{ field  }}{% if field.label == "Email" %}<div>Πανελλήνιο Σχολικό Δίκτυο - <a target="_blank" href="http://register.sch.gr/teachers/">Εγγραφή</a></div>{% endif %}
+{% if field.label == "ΑΜΑ ΙΚΑ ΕΤΑΜ" %}<div>Θα τον βρείτε στον ιστότοπο του ΙΚΑ - <a target="_blank" href="http://www.ika.gr/">www.ika.gr</a></div>{% endif %}
+{% if field.label == "Α.Μ.Κ.Α." %}<div>Θα τον βρείτε στον ιστότοπο <a target="_blank" href="http://www.amka.gr/">www.amka.gr</a></div>{% endif %}
+              </div>
+           </div>
+         {% endfor %}
+
+          
+      <br clear="both" />
+
+    </fieldset>
+  </form>
+</div>
+
+{% endblock %}
+{% block sidebar %}
+
+<div id="content-related">
+    <div class="module" id="recent-actions-module">
+        <h2>Η θέση υπηρεσίας μου για το σχ. έτος {{ yf }} - {{ yt }}</h2>
+
+      <div id="map"></div>
+    </div>
+
+<script>
+
+// Where you want to render the map.
+var element = document.getElementById('map');
+
+
+// Create Leaflet map on map element.
+var map = L.map(element);
+
+// Add OSM tile leayer to the Leaflet map.
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+// Target's GPS coordinates.
+var center = L.latLng('{{ om_y }}', '{{ om_x }}');
+map.setView(center, 12);
+L.marker(center).bindTooltip("{{ om_p }}").addTo(map);
+map.invalidateSize();
+</script>
+
+
+    <div class="module" id="recent-actions-module">
+        <h2>Το ιστορικό μου</h2>
+        <h3>Άδειες</h3>
+            <ul class="actionlist">
+            {% for entry in leaves %}
+            <li>{{entry.date_from}} - {% if entry.date_to %}{{entry.date_to}}{% endif %}: {{entry.leave}}</li>
+            {% empty %}
+            <li>Δεν βρέθηκαν άδειες</li>  
+            {% endfor %}
+            </ul>
+        <h3>Θέσεις υπηρεσίας</h3>
+            <ul class="actionlist">
+            {% for entry in positions %}
+            <li>{{entry.date_from}} - {% if entry.date_to %}{{entry.date_to}}{% endif %}: {{entry.organization}} ({{entry.type}})</li>
+            {% empty %}
+            <li>Δεν βρέθηκαν θέσεις υπηρεσίας</li>  
+            {% endfor %}
+            </ul>
+	{% if responsibilities %}
+        <h3>Θέσεις ευθύνης</h3>
+            <ul class="actionlist">
+            {% for entry in responsibilities reversed %}
+            <li>{{entry.date_from}} - {% if entry.date_to %}{{entry.date_to}}{% endif %}: {{entry.responsibility}} (Αρ. Απόφ. {{entry.order}})</li>
+            {% empty %}
+            <li>Δεν βρέθηκαν θέσεις ευθύνης</li>  
+            {% endfor %}
+            </ul>
+	{% endif %}
+  {% if applications %}
+        <h3>Αιτήσεις</h3>
+            <ul class="actionlist">
+            {% for entry in applications %}
+            <li>{{entry.datetime_finalised}}: <a id="applicationprint" href="/applications/edit/{{entry.set_id}}/?print=1">{{entry.set}}</a></li>
+            {% empty %}
+            <li>Δεν βρέθηκαν ηλεκτρονικές αιτήσεις</li>  
+            {% endfor %}
+            </ul>
+  {% endif %}
+	    {% if service %}
+        <h2>Βεβαίωση προϋπηρεσίας και απόλυσης</h2>
+            <ul class="actionlist">
+           
+            <li><a href="?print_exp=1"> {{ emp.order }}</a></li>
+             
+           
+
+            </ul>
+	    {% endif %}
+	{% if insurance %}
+        <h2>Βεβαιώσεις εργοδότη αναπληρωτών</h2>
+            <ul class="actionlist">
+            {% for entry in insurance %}
+            <li><a id="insuranceprint" href="?print_emp=1&f={{entry.id}}">{{entry.description}}</a></li>
+            {% empty %}
+            <li>Δεν βρέθηκαν βεβαιώσεις εργοδότη</li>  
+            {% endfor %}
+            </ul>
+	 {% endif %}
+            </div>
+</div>
+
+{% endblock %}
