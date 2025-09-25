@@ -7,7 +7,7 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-from dideman.dide.models import Employee, NonPermanent, Permanent, School, Placement, Administrative
+from dideman.dide.models import Profession, TransferArea, Employee, NonPermanent, Permanent, School, Placement, Administrative
 from dideman.private_teachers.models import PrivateTeacher
 from dideman.dide.util.settings import SETTINGS
 from django import VERSION as djangoversion
@@ -20,6 +20,8 @@ from django.conf.urls import *
 from django.core.urlresolvers import reverse, NoReverseMatch
 from cStringIO import StringIO
 import datetime, base64
+import os, itertools
+import xlrd
 
 
 def find_duplicates():
@@ -246,6 +248,177 @@ def nonpermanent_list(request):
 
 @csrf_protect
 @staff_member_required
+def import_export_view(request):
+    context = {
+        "title": u'Εισαγωγή - Εξαγωγή Δεδομένων',
+        "opts": [],
+        "form": [],
+        "app_label": u'Εισαγωγή - Εξαγωγή Δεδομένων',
+        "errors": [],
+    }
+
+    if request.POST:
+        if "final" in request.GET:
+            perm = []
+            notins = []
+            foundins = []
+            if 'datalength' in request.POST:
+                mf =  {x.name: x.get_internal_type() for x in Permanent._meta.fields}
+                for i in range(0,int(request.POST['datalength'])):
+                    p = Permanent()
+                    if int(request.POST['select_'+str(i)]) == 0:
+                        for j in range(1,int(request.POST['fieldlength'])+1):
+                            if request.POST['row_'+str(i)+'_item_'+str(j)]:
+                                if mf[request.POST['field_item_'+str(j)]] in ("ForeignKey"):
+                                    if request.POST['field_item_'+str(j)] in ("profession", "second_profession"):
+                                        try:
+                                            prof = Profession.objects.get(pk=unicode(request.POST['row_'+str(i)+'_item_'+str(j)]))
+                                            setattr(p, request.POST['field_item_'+str(j)], prof)
+                                        except:
+                                            prof = None
+                                    
+                                    elif request.POST['field_item_'+str(j)] in ("transfer_area"):
+                                        try:
+                                            trans = TransferArea.objects.filter(name__istartswith=unicode(request.POST['row_'+str(i)+'_item_'+str(j)][:1]))[0]
+                                        except:
+                                            trans = None
+                                        setattr(p, request.POST['field_item_'+str(j)], trans)
+                                    else:
+                                        try:
+                                            setattr(p, request.POST['field_item_'+str(j)], int(request.POST['row_'+str(i)+'_item_'+str(j)]))
+                                        except:
+                                            setattr(p, request.POST['field_item_'+str(j)], None)
+                                            
+                                elif mf[request.POST['field_item_'+str(j)]] in ("IntegerField","OneToOneField"):
+                                    try:
+                                        value = ''.join([v for v in request.POST['row_'+str(i)+'_item_'+str(j)] if v.isdigit()])
+                                        setattr(p, request.POST['field_item_'+str(j)], int(value))
+                                    except:
+                                        setattr(p, request.POST['field_item_'+str(j)], None)
+
+                                elif mf[request.POST['field_item_'+str(j)]] in ("BooleanField", "NullBooleanField"):
+                                    try:
+                                        setattr(p, request.POST['field_item_'+str(j)], int(request.POST['row_'+str(i)+'_item_'+str(j)][:1]))
+                                    except:
+                                        setattr(p, request.POST['field_item_'+str(j)], None)
+
+                                else:           
+                                    setattr(p, request.POST['field_item_'+str(j)], request.POST['row_'+str(i)+'_item_'+str(j)])
+                        if request.POST['found_item_'+str(i)] == '':
+                            try:
+                                p.save()
+                            
+                                perm.append(p)
+                            except:
+                                notins.append(p)
+                        else:
+                            try:
+                                np = NonPermanent.objects.filter(vat_number=request.POST['found_item_'+str(i)])[0]
+                                np.vat_number = '';
+                                np.identity_number = "";
+                                np.save()
+                                
+                                p.save()
+                                perm.append(p)
+                                
+                            except:
+                                try:
+                                    fp = Permanent.objects.filter(vat_number=request.POST['found_item_'+str(i)])[0]
+                                    if fp:
+                                        foundins.append(p)
+                                except:
+                                    notins.append(p)
+
+	    context = {
+                    "title": u'Εισαγωγή - Εξαγωγή Δεδομένων',
+                    "opts": [],
+                    "dataimported": perm,
+		    "notinserted": notins,
+                    "app_label": u'Εισαγωγή - Εξαγωγή Δεδομένων',
+                    "foundinserted": foundins,
+                    "errors": [],
+
+                }
+
+
+            
+        if "save" in request.GET:
+            sel_rows = 0
+            ds = []
+            fset = []
+            mf = [x.name for x in Permanent._meta.fields]
+            dbl = 0
+            if 'datalength' in request.POST:
+                for i in range(0,int(request.POST['columns'])):
+                    if len(request.POST['field_'+str(i)]) > 0:
+                        
+                        fset.append(request.POST['field_'+str(i)])
+                        
+                for i in range(0,int(request.POST['datalength'])):
+                    if "check_"+str(i) in request.POST:
+                        sel_rows += 1
+                        d = {}
+                        for j in range(1,int(request.POST['columns'])+1):
+                            if len(request.POST['field_'+str(j-1)]) > 0:
+                                d[j] = request.POST['row_'+str(i)+'_item_'+str(j)].strip()
+
+                        e = Employee.objects.filter(vat_number=request.POST['check_'+str(i)])
+
+                        if e:
+                            d['found'] = e[0].vat_number
+                            dbl += 1
+                        else:
+                            d['found'] = ''
+                        ds.append(d)
+                    
+                
+                context = {
+                    "title": u'Εισαγωγή - Εξαγωγή Δεδομένων',
+                    "opts": [],
+                    "dataselected": ds,
+                    "dublicates": dbl,
+                    "imported_file": request.POST['imported_file'],
+                    "cols": range(1, int(request.POST['columns'])+1),
+                    "iterator": itertools.count(),
+                    "app_label": u'Εισαγωγή - Εξαγωγή Δεδομένων',
+                    "field_titles": fset,
+                    "errors": [],
+                    
+                }
+        if "upload" in request.GET:
+            print "upload"
+            importfile = ""
+            if 'xls_upload' in request._files:
+                mf = [x.name for x in Permanent._meta.fields]
+                importfile = request._files['xls_upload']
+                workbook = xlrd.open_workbook(file_contents=importfile.read())
+                worksheet = workbook.sheet_by_index(0)
+                curr_row = 1
+                xlsdata = []
+                ncols = worksheet.ncols
+                while curr_row < worksheet.nrows:
+                    d = {}
+                    for i in range(ncols):
+                        d[i] = unicode(worksheet.cell_value(curr_row,i))
+                    xlsdata.append(d)
+                    curr_row += 1
+                context = {
+                    "title": u'Εισαγωγή - Εξαγωγή Δεδομένων',
+	            "opts": [],
+                    "import_file": importfile.name, 
+                    "fields": mf,
+                    "cols": range(ncols),
+                    "iterator": itertools.count(),
+                    "app_label": u'Εισαγωγή - Εξαγωγή Δεδομένων',
+                    "data": xlsdata,
+                    "errors": [],
+                }
+         
+    r = render_to_response('admin/importexport.html', context, RequestContext(request))
+    return r
+    
+@csrf_protect
+@staff_member_required
 def school_geo_view(request):
     sch = School.objects.all().exclude(google_maps_x__isnull=True).exclude(google_maps_x__exact='').exclude(google_maps_y__isnull=True).exclude(google_maps_y__exact='')
     sch_units = []
@@ -289,14 +462,14 @@ def school_geo_view(request):
 
 
 def handler404(request):
-    response = render_to_response('404.html', {},
+    response = render_to_response('admin/404.html', {},
                                   context_instance=RequestContext(request))
     response.status_code = 404
     return response
 
 
 def handler500(request):
-    response = render_to_response('500.html', {},
+    response = render_to_response('admin/500.html', {},
                                   context_instance=RequestContext(request))
     response.status_code = 500
     return response

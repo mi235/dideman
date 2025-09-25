@@ -596,7 +596,6 @@ class Employee(models.Model):
     recognised_experience = models.CharField(u'Συνολική προϋπηρεσία (ΕΕΜΜΗΗ)', null=True, blank=True, default='000000', max_length=8)
     salary_experience = models.CharField(u'Μισθολογική Προϋπηρεσία (ΕΕΜΜΗΗ)', null=True, blank=True, default='000000', max_length=8)
     # the following field needs to be added to the recognised experience
-
     recognised_experience_n4354_2015 = models.CharField(u'Προϋπηρεσία Ν. 4354/2015 (ΕΕΜΜΗΗ)', null=True, blank=True, default='000000', max_length=8)
     # new field with filter
     recognised_experience_n4452_2017 = models.CharField(u'Προϋπηρεσία Ν. 4452/2017 Βαθμολογική (ΕΕΜΜΗΗ)', null=True, blank=True, default='000000', max_length=8)
@@ -992,7 +991,7 @@ class Permanent(Employee):
         te = [(6, 24), (12, 21), (19, 20), (50, 18)]
         eep = [(4, 25), (9, 24), (14, 23), (19, 22), (50, 22)]
         get_hours = lambda sy, l: next((y, h) for y, h in l if sy <= y)[1]
-        if upl in [u'ΠΕ21', u'ΠΕ22', u'ΠΕ23', u'ΠΕ25', u'ΠΕ28', u'ΠΕ29', u'ΠΕ30', u'ΠΕ31']:
+        if upl in [u'ΠΕ21', u'ΠΕ22', u'ΠΕ23', u'ΠΕ25', u'ΠΕ28', u'ΠΕ29', u'ΠΕ30',u'ΠΕ31']:
             return get_hours(years, eep)
         elif cat == u'ΠΕ':
             return get_hours(years, pe)
@@ -1002,10 +1001,10 @@ class Permanent(Employee):
             return 30
     hours.short_description = u'Υποχρεωτικό ωράριο'
 
-    # επόμενη μείωση ωραρίου σε διάστημα
+    # επόμενη μείωση ωραρίου σε διάστημα 
     def hours_next(self):
 
-        # Modified by nisiotis as suggested by mi235
+	# Modified by nisiotis as suggested by mi235
         upl = self.unified_profession()
         cat = self.profession.category()
         years = self.educational_service().years
@@ -1017,25 +1016,25 @@ class Permanent(Employee):
         get_hours = lambda sy, l: next((y, h) for y, h in l if sy <= y)[0]
 
         if upl in [u'ΠΕ21', u'ΠΕ22', u'ΠΕ23', u'ΠΕ25', u'ΠΕ28', u'ΠΕ29', u'ΠΕ30', u'ΠΕ31']:
-            dt = DateInterval(days=30 - days, months=11 - months, years=get_hours(years, eep) - years)
+            dt = DateInterval(days=30 - days, months=11 - months, years=get_hours(years, eep) - years)        
 
         elif cat == u'ΠΕ':
-            dt = DateInterval(days=30 - days, months=11 - months, years=get_hours(years, pe) - years)
+            dt = DateInterval(days=30-days, months=11-months, years=get_hours(years, pe)-years)
         elif cat == u'ΤΕ':
-            dt = DateInterval(days=30 - days, months=11 - months, years=get_hours(years, te) - years)
+            dt = DateInterval(days=30-days, months=11-months, years=get_hours(years, te)-years)
         else:
-            dt = None  # DateInterval(days=0, months=0, years=0)
+            dt = None # DateInterval(days=0, months=0, years=0)
 
-        # if self.hours() == 18:
+        #if self.hours() == 18:
         #    return None #DateInterval(days=0, months=0, years=0)
-        # else:
+        #else:
         #    return dt
-        if self.hours() == 18 or (
-                upl in [u'ΠΕ21', u'ΠΕ22', u'ΠΕ23', u'ΠΕ25', u'ΠΕ28', u'ΠΕ29', u'ΠΕ30', u'ΠΕ31'] and self.hours() == 22):
-            return None  # DateInterval(days=0, months=0, years=0)
+        if self.hours() == 18 or (upl in [u'ΠΕ21', u'ΠΕ22', u'ΠΕ23', u'ΠΕ25', u'ΠΕ28', u'ΠΕ29', u'ΠΕ30', u'ΠΕ31'] and  self.hours() == 22):
+            return None #DateInterval(days=0, months=0, years=0)
         else:
             return dt
     hours_next.short_description = u'Επόμενη αλλαγή ωραρίου'
+
 
     def natural_key(self):
         return (self.registration_number, )
@@ -1588,6 +1587,7 @@ class Placement(models.Model):
     order_pysde = models.CharField(u'Απόφαση Π.Υ.Σ.Δ.Ε.', max_length=300, null=True, blank=True)
     # New field to add for the type of experience
     teaching_service = models.NullBooleanField(u'Είναι διδακτική προϋπηρεσία;', null=True, default=True)
+    reduce_hours = models.NullBooleanField(u'Προσμέτρηση για μείωση ωραρίου', null=True, default=True)
 
     def natural_key(self):
         return (self.employee, self.organization, self.date_from)
@@ -2187,5 +2187,13 @@ class GeoSchool(School):
     class Meta:
         verbose_name = u'Σχολεία - Γεωγραφική Απεικόνιση'
         verbose_name_plural = u'Σχολεία - Γεωγραφική Απεικόνιση'
+        proxy = True
+        managed = False
+
+class ImportExport(Employee):
+
+    class Meta:
+        verbose_name = u'Εισαγωγή - Εξαγωγή Δεδομένων'
+        verbose_name_plural = u'Εισαγωγή - Εξαγωγή Δεδομένων'
         proxy = True
         managed = False
